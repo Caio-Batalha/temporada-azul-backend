@@ -81,6 +81,19 @@ def create_hold_booking(
 
     with conn.cursor() as cur:
 
+        # 3.0) Lazy-expire holds (event-driven cleanup)
+        # This does NOT affect seat availability (we already compute holds with hold_expires_at > NOW()).
+        # It keeps the database status accurate for reporting/debugging.
+        cur.execute(
+            """
+            UPDATE bookings
+            SET status = 'expired'
+            WHERE status = 'hold'
+              AND hold_expires_at IS NOT NULL
+              AND hold_expires_at <= NOW();
+            """
+        )
+
         # 3.1) Check if tour exists and is active
         cur.execute(
             """
