@@ -1,6 +1,9 @@
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import uvicorn
+
 
 # Local modules:
 # - get_db_connection(): opens a Postgres connection using DATABASE_URL
